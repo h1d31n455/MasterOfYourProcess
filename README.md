@@ -3,7 +3,7 @@
 DickVayne v0.5a
 - 0.4 now works with OGOrbWalker
 - 0.5 
-- 0.6 Channeling interrupt
+- 0.6 Channeling interrupt should work ? XD 
 
 DickHelp v0.1
 
