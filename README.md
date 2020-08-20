@@ -5,9 +5,10 @@ DickVayne v0.5a
 - 0.5 
 - 0.6 Channeling interrupt
 
+DickHelp v0.1
 
-DickHelp
 HUtilsEdited + DickKillSecure
+
 - HextechGunblad Kill Secure
 
 - SwordOfFeastAndFamine  BilgewaterCutlass  RanduinsOmen used in combo (target.Health) <= ((target.MaxHealth*0.6))
