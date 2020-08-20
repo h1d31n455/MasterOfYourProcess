@@ -146,6 +146,7 @@ local function OnBuffGain(Player, buffInst)
 
 -- OnLoad
 function OnLoad()
+		Orbwalker.Initialize()
 	EventManager.RegisterCallback(Enums.Events.OnTick, OnTick)
 	EventManager.RegisterCallback(Enums.Events.OnTick, OnTick2)
 	EventManager.RegisterCallback(Enums.Events.OnDraw, OnDraw)

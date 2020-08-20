@@ -163,19 +163,23 @@ local function AutoQE()
 			if dist < 580 and getKSQEdmg(hero) > (hero.Health)then	
 				Input.Cast(SpellSlots.Q, mousepos)
 				Input.Attack(hero)
+				Input.Cast(SpellSlots.E, hero)
     --toadd EventManager.FireEvent(Events.OnAutoAttack)
 			elseif dist > 580 and dist < 750  and getKSQEdmg(hero) > (hero.Health) then	
 				Input.Cast(SpellSlots.Q, hero.Position)
 				Input.Attack(hero)
+				Input.Cast(SpellSlots.E, hero)
     --toadd EventManager.FireEvent(Events.OnAutoAttack)
 --- Q + aa + E	
 			elseif dist < 580 and buffCountBolts == 2 and getKSWQEdmg(hero) > (hero.Health) then	
 				Input.Cast(SpellSlots.Q, mousepos)
-				Input.Attack(hero)				
+				Input.Attack(hero)
+				Input.Cast(SpellSlots.E, hero)
     --toadd EventManager.FireEvent(Events.OnAutoAttack)
 			elseif dist > 580 and dist < 750 and buffCountBolts == 2 and getKSWQEdmg(hero) > (hero.Health) then	
 				Input.Cast(SpellSlots.Q, hero.Position)
 				Input.Attack(hero)
+				Input.Cast(SpellSlots.E, hero)
     --toadd EventManager.FireEvent(Events.OnAutoAttack)
 			end
 		end		
@@ -191,7 +195,7 @@ end
 local function OnTick()	
 	AutoE()
 	AutoQ()
----	AutoQE()	   --toadd EventManager.FireEvent(Events.OnAutoAttack)
+	-- AutoQE()	   --toadd EventManager.FireEvent(Events.OnAutoAttack)
 
 	local target = Orbwalker.Mode == 1 and Orbwalker.CurrentTarget
 	if target then 
