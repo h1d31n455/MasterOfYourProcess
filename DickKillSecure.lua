@@ -2,10 +2,12 @@
 require("common.log")
 module("DickKillSecure", package.seeall, log.setup)
 
+
 -- REQUIEREMENTS
 
 local Orb = require("lol/Modules/Common/OGOrbWalker")
 local ts = require("lol/Modules/Common/OGsimpleTS")
+
 
 -- API
 local _Core = _G.CoreEx
@@ -14,10 +16,6 @@ local SpellSlots, SpellStates = Enums.SpellSlots, Enums.SpellStates
 local Player = ObjManager.Player
 
 
-local _Q = SpellSlots.Q
-local _W = SpellSlots.W
-local _E = SpellSlots.E
-local _R = SpellSlots.R
 
 -- CALCULATION
 local function getHextechdmg(target)
@@ -26,6 +24,7 @@ local function getHextechdmg(target)
 	local Hextechdmgtotal = Hextechdmglvl + (0.3 * Player.TotalAP)
 	return Hextechdmgtotal * (100.0 / (100 + target.FlatMagicReduction) )
 end
+
 
 
 
@@ -50,7 +49,8 @@ end
 
 
 local function OnTick()
-	local target = ts:GetTarget(1200, ts.Priority.LowestHealth) 
+	local target = ts:GetTarget(1200, ts.Priority.LowestHealth)
+	local isMelee = false
 	if target and getHextechdmg(target) > (target.Health) then
 		UseItemsCombo2(target)
 	end
