@@ -9,7 +9,7 @@ DickVayne v0.5a
 - 0.5 
 - 0.6 Channeling interrupt should work ? XD 
 
-DickHelp v0.1
+DickHelp  v0.2
 
 HUtilsEdited + DickKillSecure
 
