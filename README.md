@@ -1,7 +1,7 @@
 # MasterOfYourProcess
 
-DickYoneOrYasuo v0.2
--  only shity Q so dont use it xD
+DickYone v0.2
+-  only shity Q so dont use it xD (it works with yasuo just turn of [AutoW()] and [if Player.CharName ~= "Yasuo"]
 
 
 DickVayne v0.5a
