@@ -5,7 +5,7 @@ module("DickHelp", package.seeall, log.setup)
 
 -- REQUIEREMENTS
 
-local Orb = require("lol/Modules/Common/OGOrbWalker")
+local Orbwalker = require("lol/Modules/Common/OGOrbWalker")
 local ts = require("lol/Modules/Common/OGsimpleTS")
 
 
@@ -14,6 +14,13 @@ local _Core = _G.CoreEx
 local ObjManager, EventManager, Input, Enums, Game, Renderer, Vector  = _Core.ObjectManager, _Core.EventManager, _Core.Input, _Core.Enums, _Core.Game, _Core.Renderer, _Core.Geometry.Vector
 local SpellSlots, SpellStates = Enums.SpellSlots, Enums.SpellStates
 local Player = ObjManager.Player
+
+local AsAi = GameObject
+
+local _Q = SpellSlots.Q
+local _W = SpellSlots.W
+local _E = SpellSlots.E
+local _R = SpellSlots.R
 
 
 
@@ -126,7 +133,7 @@ local function OnBuffGain(Player, buffInst)
 			if _item.Name == "QuicksilverSash" or _item.Name == "ItemMercurial" then
 				if Player:GetSpellState(i) ~= SpellStates.Ready then return end
 
-					if Player.IsTaunted or Player.IsCharmed or Player.IsAsleep or buffInst.IsDisarmed or Player.IsBlind or Player.IsBlinded and Player.IsImmovable then
+					if Player.IsTaunted or Player.IsCharmed or Player.IsAsleep or buffInst.IsDisarm or Player.IsImmovable then
 						Input.Cast(i)
 	
 					end
