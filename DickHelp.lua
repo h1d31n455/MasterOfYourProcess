@@ -1,6 +1,6 @@
 
 require("common.log")
-module("DickHelp", package.seeall, log.setup)
+module("DickHelp v0.2", package.seeall, log.setup)
 
 
 -- REQUIEREMENTS
@@ -152,6 +152,6 @@ function OnLoad()
 	EventManager.RegisterCallback(Enums.Events.OnDraw, OnDraw)
 	EventManager.RegisterCallback(Enums.Events.OnBuffGain, OnBuffGain)
 	EventManager.RegisterCallback(Enums.Events.OnTeleport, OnTeleport)
-	Game.PrintChat("DickHelp Loaded !")
+	Game.PrintChat("DickHelp v0.2 Loaded !")
 	return true
 end
