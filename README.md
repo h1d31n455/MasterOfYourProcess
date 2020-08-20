@@ -1,7 +1,7 @@
 # MasterOfYourProcess
 
 DickYoneOrYasuo v0.2
-- shit Q on so dont use it xD
+-  only shity Q so dont use it xD
 
 
 DickVayne v0.5a
