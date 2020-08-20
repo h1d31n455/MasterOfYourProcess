@@ -8,7 +8,6 @@ local ObjManager, EventManager, Input, Enums, Game = _SDK.ObjectManager, _SDK.Ev
 local SpellSlots, SpellStates = Enums.SpellSlots, Enums.SpellStates
 local Player = ObjManager.Player
 local Events = _SDK.Enums.Events
-local BuffTypes = _SDK.Enums.BuffTypes
 local Renderer = _G.CoreEx.Renderer
 local Input = _G.CoreEx.Input
 
