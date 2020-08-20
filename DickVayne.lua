@@ -1,5 +1,5 @@
 require("common.log")
-module("DickVayne v0.5", package.seeall, log.setup)
+module("DickVayne v0.5b", package.seeall, log.setup)
 --- api
 
 winapi = require("utils.winapi")
@@ -98,17 +98,17 @@ local function AutoQ()
 --- Q + aa			
 			if dist < 580 and getQdmg(hero) > (hero.Health) then	
 				Input.Cast(SpellSlots.Q, mousepos)
-				
+				Input.Attack(hero)
 			elseif	dist > 580 and dist < 750 and getQdmg(hero) > (hero.Health) then	
 				Input.Cast(SpellSlots.Q, hero.Position)
-					
+				Input.Attack(hero)
 ---  Q + aa(W_passive)
 			elseif dist < 580 and buffCountBolts == 2 and getKSQWdmg(hero) > (hero.Health) then	
 				Input.Cast(SpellSlots.Q, mousepos)
-									
+				Input.Attack(hero)					
 			elseif dist > 580 and dist < 750 and buffCountBolts == 2 and getKSQWdmg(hero) > (hero.Health) then	
 				Input.Cast(SpellSlots.Q, hero.Position)
-					
+				Input.Attack(hero)	
 			end
 		end		
 	end	
@@ -156,20 +156,20 @@ local function AutoQE()
 --- Q + aa(W_passive) + E			
 			if dist < 580 and getKSQEdmg(hero) > (hero.Health)then	
 				Input.Cast(SpellSlots.Q, mousepos)
-				
+				Input.Attack(hero)
     --toadd EventManager.FireEvent(Events.OnAutoAttack)
 			elseif dist > 580 and dist < 750  and getKSQEdmg(hero) > (hero.Health) then	
 				Input.Cast(SpellSlots.Q, hero.Position)
-				
+				Input.Attack(hero)
     --toadd EventManager.FireEvent(Events.OnAutoAttack)
 --- Q + aa + E	
 			elseif dist < 580 and buffCountBolts == 2 and getKSWQEdmg(hero) > (hero.Health) then	
 				Input.Cast(SpellSlots.Q, mousepos)
-								
+				Input.Attack(hero)				
     --toadd EventManager.FireEvent(Events.OnAutoAttack)
 			elseif dist > 580 and dist < 750 and buffCountBolts == 2 and getKSWQEdmg(hero) > (hero.Health) then	
 				Input.Cast(SpellSlots.Q, hero.Position)
-				
+				Input.Attack(hero)
     --toadd EventManager.FireEvent(Events.OnAutoAttack)
 			end
 		end		
@@ -202,7 +202,7 @@ function OnLoad()
 		
 	Orbwalker.Initialize()
 
-	Game.PrintChat("DickVayne v0.5 Loaded !")
+	Game.PrintChat("DickVayne v0.5b Loaded !")
     
 	return true
 end				
