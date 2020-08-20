@@ -1,5 +1,8 @@
 # MasterOfYourProcess
 
+DickYone v0.1
+- shit Q on so dont use it xD
+
 DickVayne v0.5a
 - 0.4 now works with OGOrbWalker
 - 0.5 
