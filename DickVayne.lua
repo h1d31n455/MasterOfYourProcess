@@ -2,8 +2,6 @@ require("common.log")
 module("DickVayne v0.5b", package.seeall, log.setup)
 --- api
 
-winapi = require("utils.winapi")
-
 local _SDK = _G.CoreEx
 local ObjManager, EventManager, Input, Enums, Game = _SDK.ObjectManager, _SDK.EventManager, _SDK.Input, _SDK.Enums, _SDK.Game
 local SpellSlots, SpellStates = Enums.SpellSlots, Enums.SpellStates
