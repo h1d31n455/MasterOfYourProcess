@@ -3,14 +3,16 @@
 DickVayne v0.5a
 - 0.4 now works with OGOrbWalker
 - 0.5 
-- 0.6 chaneling interupt
+- 0.6 Channeling interrupt
 
-HUtilsEdited
-- 0.1 to work with OGOrbWalker and DickKillSecure
 
-DickKillSecure
-- 0.1 Hextech Gountlet KS 
+DickHelp
+HUtilsEdited + DickKillSecure
+- HextechGunblad Kill Secure
 
+- SwordOfFeastAndFamine  BilgewaterCutlass  RanduinsOmen used in combo (target.Health) <= ((target.MaxHealth*0.6))
+- im a shit head so other utility from HUtils
+- Auto QSS useable ? on : {Taunt, Charm, Asleep} testing : {Disarm, Immovable}
 
 ----------------------------------------------------------------
 ----------------------------------------------------------------
