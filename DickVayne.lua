@@ -1,6 +1,7 @@
 require("common.log")
-module("DickVayne v0.5b", package.seeall, log.setup)
+module("DickVayne v0.6", package.seeall, log.setup)
 --- api
+
 
 local _SDK = _G.CoreEx
 local ObjManager, EventManager, Input, Enums, Game = _SDK.ObjectManager, _SDK.EventManager, _SDK.Input, _SDK.Enums, _SDK.Game
@@ -127,11 +128,18 @@ local function AutoE()
 			local buffCountBolts = countWStacks(hero) 
 			local dist = myPos:Distance(hero.Position)
 			local mousepos = Renderer.GetMousePos()
+-- Stop Chanling Closer			
+			if dist <= 550 and hero.IsChanneling then
+				Input.Cast(SpellSlots.E, hero) 
+			elseif dist > 550 and hero.IsChanneling and dist < 750 and Player:GetSpellState(SpellSlots.Q) == SpellStates.Ready then
+			Input.Cast(SpellSlots.Q, hero.Position)
+			Input.Cast(SpellSlots.E, hero)
+			end
 -- Anti-Gap Closer			
 			if dist <= 200 then				
 				Input.Cast(SpellSlots.E, hero) 
 --- E(W_passive)				
-			elseif dist <= 550 and buffCountBolts == 2 and getKSWEdmg(hero) > (hero.Health) then	
+			elseif dist <= 550 and buffCountBolts == 2 and getKSWEdmg(hero) > (hero.Health) then
 				Input.Cast(SpellSlots.E, hero)				
 			end
 		end		
@@ -200,7 +208,7 @@ function OnLoad()
 		
 	Orbwalker.Initialize()
 
-	Game.PrintChat("DickVayne v0.5b Loaded !")
+	Game.PrintChat("DickVayne v0.6 Loaded !")
     
 	return true
 end				
