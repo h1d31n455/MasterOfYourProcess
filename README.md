@@ -1,15 +1,18 @@
 # MasterOfYourProcess
 
-DickYone v0.2
+DickYone
+v0.2
 -  only shity Q so dont use it xD (it works with yasuo just turn of [AutoW()] and [if Player.CharName ~= "Yasuo"]
 
 
-DickVayne v0.5a
+DickVayne
 - 0.4 now works with OGOrbWalker
 - 0.5 
 - 0.6 Channeling interrupt should work ? XD 
 
-DickHelp  v0.2
+DickHelp
+
+v0.2
 
 HUtilsEdited + DickKillSecure
 
