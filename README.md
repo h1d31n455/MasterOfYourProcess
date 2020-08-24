@@ -1,5 +1,14 @@
 # MasterOfYourProcess
 
+look_at_my_ass
+v0.1
+- casio R 
+- shaco AA
+- shaco Q
+- tryndamare W
+
+
+
 DickYone
 v0.2
 -  only shity Q so dont use it xD (it works with yasuo just turn of [AutoW()] and [if Player.CharName ~= "Yasuo"]
