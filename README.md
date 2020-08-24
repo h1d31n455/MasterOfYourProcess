@@ -12,6 +12,7 @@ v0.1
 DickYone
 v0.2
 -  only shity Q so dont use it xD (it works with yasuo just turn of [AutoW()] and [if Player.CharName ~= "Yasuo"]
+
 v0.3
 - i dont get it so no thx DELETED
 
