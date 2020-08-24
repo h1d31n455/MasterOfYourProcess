@@ -5,7 +5,7 @@ DickVayne
 - 0.4 now works with OGOrbWalker
 - 0.5 
 - 0.6 Channeling interrupt should work ? XD 
-
+- WIP 1.0 better Q-E logic and [WIP] wall_Condemn
 
 DickHelp
 
