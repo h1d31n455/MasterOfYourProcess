@@ -9,9 +9,9 @@ Added:
 
 *-CondemnLogic*
 
-To Add:*
+To Add:
 
-*-BETTER Code *
+*-BETTER Code*
 
 *-W PASSIVE NAME (i have no idea)*
 
