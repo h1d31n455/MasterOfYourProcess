@@ -65,10 +65,10 @@ end
 		--- E Wall
 local function getEdmgWall(target)
 	local vayneEWall = {50, 85, 120, 155, 190}
-	local dmgEWall = vayneE[Player:GetSpell(SpellSlots.E).Level]
+	local dmgEWall = vayneEWall[Player:GetSpell(SpellSlots.E).Level]
 	local vayneEWallbonus = {75, 127.5, 180, 232.5, 285}
 	local dmgEWallbonus = vayneEWallbonus[Player:GetSpell(SpellSlots.E).Level]
-	return ((dmgEWall + (Player.BonusAD * 0.5) ) + (vayneEWallbonus + (Player.BonusAD * 0.75) )) * (100.0 / (100 + target.Armor ) )
+	return ((dmgEWall + (Player.BonusAD * 0.5) ) + (dmgEWallbonus + (Player.BonusAD * 0.75) )) * (100.0 / (100 + target.Armor ) )
 end		
 		
 --- KS EW DMG logiv
@@ -106,16 +106,18 @@ local function Tumble()
 			local AfterTumblePos = myPos + (mousepos - myPos):Normalized() * 300
 			local DistanceAfterTumble = DistanceSqr(AfterTumblePos, hero.Position)
 			
-            if  DistanceAfterTumble < 630*630 and DistanceAfterTumble > 300*300 and (hero.Health) < (hero.MaxHealth*0.7) and (hero.Health) > (hero.MaxHealth*0.1) then
+            if  DistanceAfterTumble < 630*630 and DistanceAfterTumble > 300*300 and (hero.Health) < (hero.MaxHealth*0.8) and (hero.Health) > (hero.MaxHealth*0.1) then
                 Input.Cast(SpellSlots.Q, mousepos)
-			elseif	DistanceAfterTumble < 630*630 and DistanceAfterTumble > 300*300 and (hero.Health) > (hero.MaxHealth*0.7) and (Player.Health) < (hero.MaxHealth*0.5) then
+				Input.Attack(hero)
+				
+			elseif	DistanceAfterTumble < 630*630 and DistanceAfterTumble > 300*300 and (hero.Health) <= (Player.Health) and (hero.Health) > (hero.MaxHealth*0.05) then
                 Input.Cast(SpellSlots.Q, mousepos)
-			elseif	DistanceAfterTumble < 630*630 and DistanceAfterTumble > 300*300 and (hero.Health) <= (Player.Health) and (hero.Health) > (hero.MaxHealth*0.1) then
-                Input.Cast(SpellSlots.Q, mousepos)	
+				Input.Attack(hero)
             end
 			
-            if dist > 630*630 and DistanceAfterTumble < 630*630 and (hero.Health) > (hero.MaxHealth*0.1) then
+            if dist > 630*630 and DistanceAfterTumble < 630*630 and (hero.Health) > (hero.MaxHealth*0.05) then
                 Input.Cast(SpellSlots.Q, mousepos)
+				Input.Attack(hero)
 			end		
 		end	
 	end 
@@ -124,27 +126,26 @@ end
 function Condemn()
 	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 	local enemies = ObjManager.Get("enemy", "heroes")
-	local buffCountBolts = countWStacks(hero) 
+	
 	if Player:GetSpellState(SpellSlots.E) ~= SpellStates.Ready then return end
 			for handle, obj in pairs(enemies) do  
 				
 
 				local hero = obj.AsHero   
+				local buffCountBolts = countWStacks(hero) 
 					if hero and hero.IsTargetable and myPos:Distance(hero.Position) <= 800 and myPos:Distance(hero.Position) > 0 then
 					local PushDistance = 400
 				if hero.IsMoving then	
 								local ezPredict = hero:FastPrediction(300)
 								local PushPositionM = ezPredict + (ezPredict - Player.Position):Normalized()*(PushDistance)
 								local WallPointM = Vector.IsWall(PushPositionM) 
-									if WallPointM and (hero.Health) > (hero.MaxHealth*0.1) then
+									if WallPointM and (hero.Health) >= (hero.MaxHealth*0.3) then
 										Input.Cast(SpellSlots.E, hero)
 									end	
-									if WallPointM and getKSWEdmgWall(hero) > (hero.Health) and buffCountBolts == 2 then
+									if WallPointM and getKSWEdmg(hero) > (hero.Health) then
 										Input.Cast(SpellSlots.E, hero)
 									end	
-									if WallPointM and getEdmgWall(hero) > (hero.Health) then
-										Input.Cast(SpellSlots.E, hero)
-									end	
+
 				
 				elseif Player.Position:Distance(hero.Position) <= 799 then
 								local PushPosition = hero.Position + (hero.Position - Player.Position):Normalized()*(PushDistance)
@@ -157,9 +158,7 @@ function Condemn()
 									if WallPoint and getKSWEdmgWall(hero) > (hero.Health) and buffCountBolts == 2 then
 										Input.Cast(SpellSlots.E, hero)
 									end	
-									if WallPoint and getEdmgWall(hero) > (hero.Health) then
-										Input.Cast(SpellSlots.E, hero)
-									end	
+
 						end
 									
 						end
@@ -221,10 +220,12 @@ end
 end
 ----------------------
 local function OnTick()	
+	Condemn()
 	AutoQ()	
 	AutoE()
 	local target = Orb.Mode.Combo and ts:GetTarget(1150,ts.Priority.LowestHealth)
 	if target then 
+	
 	Tumble(target)
 	end
 
