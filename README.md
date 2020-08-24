@@ -21,4 +21,4 @@ To Add:*
 
 ----------------------------------------------------------------*
 
-HUtilsEdited removed
+DickHelp.lua removed
