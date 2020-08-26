@@ -17,7 +17,8 @@ Version 1.1
 require("common.log")
 module("DickVayne", package.seeall, log.setup)
 
-local ts = require("lol/Modules/Common/simpleTS")
+local Orb = require("lol/Modules/Common/OGOrbWalker")
+local ts = require("lol/Modules/Common/OGsimpleTS")
 local UIMenu = require("lol/Modules/Common/Menu")
 ------------------------
 -------- API
@@ -176,9 +177,9 @@ local dvmenu = UIMenu:AddMenu("DickVayne")
 		local Qmmp = Qmenu:AddMenu("MP Settings")
 				local Qmmpinfo10 = Qmmp:AddLabel("MP Settings")
 				local Qmmpinfo1 = Qmmp:AddLabel("MinMP to use Q in FightMode")
-				local Qmpcom = Qmmp:AddSlider("",0,100,1,0)
+				local Qmpcom = Qmmp:AddSlider("%MP",0,100,1,0)
 				local Qmmpinfo2 = Qmmp:AddLabel("MinMP to use Q in HarassMode")
-				local Qmphara = Qmmp:AddSlider("",0,100,1,50)
+				local Qmphara = Qmmp:AddSlider("%MP",0,100,1,50)
 ---BotRK
 	local RKmenu = dvmenu:AddMenu("[BotRK]:")
 	
@@ -241,6 +242,10 @@ end
 -------- Tumble Logic
 --------------------------------
 local function Tumble()
+
+local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
+local enemies = ObjManager.Get("enemy", "heroes")
+
 
 	for handle, obj in pairs(enemies) do        
 		local hero = obj.AsHero        
@@ -468,10 +473,10 @@ end
 --------------------------------
 local function OnTick()	
 
-	local target = ts:GetTarget(1150,ts.Priority.LowestHealth)
+	local target = ts:GetTarget(1200, ts.Priority.LowestHealth)
 	if target then 
 	TumbleCombat()
-	UseItemsCombo(target)	
+	UseItemsCombo()	
 	end
 	
 	AutoQ()
@@ -488,11 +493,11 @@ end
 -------- OnLoad
 --------------------------------
 function OnLoad() 
+	if Player.CharName ~= "Vayne" then return false end 
 	EventManager.RegisterCallback(Enums.Events.OnTick, OnTick)
 
 	EventManager.RegisterCallback(Enums.Events.OnProcessSpell, OnProcessSpell)
 
-	if Player.CharName ~= "Vayne" then return false end 
 	local Key = DickVayne.Setting.Key
     EventManager.RegisterCallback(Events.OnKeyDown, function(keycode, _, _) if keycode == Key.Combo then DickVayne.Mode.Combo = true  end end)
     EventManager.RegisterCallback(Events.OnKeyUp,   function(keycode, _, _) if keycode == Key.Combo then DickVayne.Mode.Combo = false end end)	
