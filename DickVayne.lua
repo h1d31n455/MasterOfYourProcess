@@ -8,7 +8,7 @@
 ██. ██ ▐█▌▐███▌▐█.█▌ ███ ▐█ ▪▐▌ ▐█▀·.██▐█▌▐█▄▄▌
 ▀▀▀▀▀• ▀▀▀·▀▀▀ ·▀  ▀. ▀   ▀  ▀   ▀ • ▀▀ █▪ ▀▀▀ 
 by h1d31n455
-Version 1.1
+Version 1.1b
 
 ]]--
 ------------------------
@@ -442,20 +442,28 @@ end
 --------------------------------
 --------BotRK
 --------------------------------
-local function UseItemsCombo(target)	
+local function UseItemsCombo()	
 if RKonoff.Value then
-
+	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
+	local enemies = ObjManager.Get("enemy", "heroes")
+	
 					for i=SpellSlots.Item1, SpellSlots.Item6 do
 						local _item = Player:GetSpell(i)
 						if _item ~= nil and _item then
+						
+								for handle, obj in pairs(enemies) do        
+			local hero = obj.AsHero        
+			if hero and hero.IsTargetable then
+				local dist = myPos:Distance(hero.Position)	
+						
 							-- BOTRK + HEXTECH GUNBLADE + RANDUIN
 							if _item.Name == "ItemSwordOfFeastAndFamine" or _item.Name == "BilgewaterCutlass" then
 								if Player:GetSpellState(i) == SpellStates.Ready then
 								
 										if ( DickVayne.Mode.Combo and RKmcom.Value ) or ( DickVayne.Mode.Harras and RKmhara.Value ) then
-											if (target.Health) >= ((target.MaxHealth*(RKehp.Value / 100))) and (Player.Health) >= ((Player.MaxHealth*(RKphp.Value / 100))) then
-												if Player.Position:Distance(target.Position) <= _item.DisplayRange then
-													Input.Cast(i, target)
+											if (hero.Health) >= ((hero.MaxHealth*(RKehp.Value / 100))) and (Player.Health) >= ((Player.MaxHealth*(RKphp.Value / 100))) then
+												if dist <= _item.DisplayRange then
+													Input.Cast(i, hero)
 												end
 									break
 								end
@@ -468,6 +476,9 @@ end
 end
 end
 end
+end
+end
+
 --------------------------------
 --------OnTick
 --------------------------------
@@ -497,7 +508,7 @@ function OnLoad()
 	EventManager.RegisterCallback(Enums.Events.OnTick, OnTick)
 
 	EventManager.RegisterCallback(Enums.Events.OnProcessSpell, OnProcessSpell)
-
+Orb.Initialize()
 	local Key = DickVayne.Setting.Key
     EventManager.RegisterCallback(Events.OnKeyDown, function(keycode, _, _) if keycode == Key.Combo then DickVayne.Mode.Combo = true  end end)
     EventManager.RegisterCallback(Events.OnKeyUp,   function(keycode, _, _) if keycode == Key.Combo then DickVayne.Mode.Combo = false end end)	
