@@ -16,4 +16,4 @@ DickVayne 1.1 Still WIP
 
 [If u find any Skill you will find a way to tell me or add it your self]
 
-[list of skill all skills https://github.com/h1d31n455/MasterOfYourProcess/wiki/DickVayne-Skill-list]
+[list of all skills https://github.com/h1d31n455/MasterOfYourProcess/wiki/DickVayne-Skill-list]
