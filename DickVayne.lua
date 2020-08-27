@@ -8,7 +8,22 @@
 ██. ██ ▐█▌▐███▌▐█.█▌ ███ ▐█ ▪▐▌ ▐█▀·.██▐█▌▐█▄▄▌
 ▀▀▀▀▀• ▀▀▀·▀▀▀ ·▀  ▀. ▀   ▀  ▀   ▀ • ▀▀ █▪ ▀▀▀ 
 by h1d31n455
-Version 1.1b
+Version 1.2.2a
+
+
+Changelog :
+1.2.2a
+- Upgrade Condemn Logic
+- add Predic Condemn Drawing
+- add Ward Bush affter Condemn WIP 
+- Upgrade Tumble Logic 
+- Update Chanling and Interrupt for Sellected_spells :NowWorks:
+
+[If u find any Skill you will find a way to tell me or add it your self]
+[list of all skills https://github.com/h1d31n455/MasterOfYourProcess/wiki/DickVayne-Skill-list]
+
+
+
 
 ]]--
 ------------------------
@@ -17,6 +32,7 @@ Version 1.1b
 require("common.log")
 module("DickVayne", package.seeall, log.setup)
 
+winapi = require("utils.winapi")
 local Orb = require("lol/Modules/Common/OGOrbWalker")
 local ts = require("lol/Modules/Common/OGsimpleTS")
 local UIMenu = require("lol/Modules/Common/Menu")
@@ -24,6 +40,7 @@ local UIMenu = require("lol/Modules/Common/Menu")
 -------- API
 ------------------------
 local _SDK = _G.CoreEx
+local Nav = _G.CoreEx.Nav
 local ObjManager, EventManager, Input, Enums, Game = _SDK.ObjectManager, _SDK.EventManager, _SDK.Input, _SDK.Enums, _SDK.Game
 local SpellSlots, SpellStates = Enums.SpellSlots, Enums.SpellStates
 local Player = ObjManager.Player
@@ -42,8 +59,7 @@ local _W = SpellSlots.W
 local _E = SpellSlots.E
 local _R = SpellSlots.R
 
-local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
-local enemies = ObjManager.Get("enemy", "heroes")
+
 
 
 
@@ -54,7 +70,7 @@ local enemies = ObjManager.Get("enemy", "heroes")
 isAGapcloserUnitTarget = {
         ['AkaliR']					= {true, Champ = 'Akali', 		spellKey = 'R'},
         ['Headbutt']     			= {true, Champ = 'Alistar', 	spellKey = 'W'},
-        ['DianaTeleport']       	= {true, Champ = 'Diana', 		spellKey = 'R'},
+        ['DianaE']       	= {true, Champ = 'Diana', 		spellKey = 'E'},
         ['IreliaGatotsu']     		= {true, Champ = 'Irelia',		spellKey = 'Q'},
         ['JaxLeapStrike']         	= {true, Champ = 'Jax', 		spellKey = 'Q'},
         ['JayceToTheSkies']       	= {true, Champ = 'Jayce',		spellKey = 'Q'},
@@ -89,9 +105,12 @@ isAGapcloserUnitNoTarget = {
         ['ShenE']					= {true, Champ = 'Shen', 		range = 600,  	projSpeed = 2000, spellKey = 'E'},
         ['RocketJump']				= {true, Champ = 'Tristana', 	range = 900,  	projSpeed = 2000, spellKey = 'W'},
         ['slashCast']				= {true, Champ = 'Tryndamere', 	range = 650,  	projSpeed = 1450, spellKey = 'E'},
+		['DariusAxeGrabCone']				= {true, Champ = 'Darius', 	range = 550,  	projSpeed = 2000, spellKey = 'E'},
     }
 
 isAChampToInterrupt = {
+
+
         ['KatarinaR']					= {true, Champ = 'Katarina',	spellKey = 'R'},
         ['GalioR']						= {true, Champ = 'Galio',		spellKey = 'R'},
         ['Crowstorm']					= {true, Champ = 'FiddleSticks',spellKey = 'R'},
@@ -136,23 +155,6 @@ local DickVayne = {
 --------------------------------
 
 local dvmenu = UIMenu:AddMenu("DickVayne")
----Condemn
-	local Emenu = dvmenu:AddMenu("[Condemn]:")
-		local Emenu12 = Emenu:AddLabel("[Condemn]:")
-		local Emenustu = Emenu:AddMenu("AutoStun Settings")
-				local Emenuof = Emenustu:AddLabel("AutoStun Settings")
-				local Emenuof = Emenustu:AddBool("TryStun?", true)
-				local Edis = Emenustu:AddSlider("PushDistance",350,450,10,400)
-				-- local Etower = Emenu:AddLabel("Unter a Tower", false) WIP
-				
-		local Emenuint = Emenu:AddMenu("Interrupt Settings")
-				local Einter0 = Emenuint:AddLabel("Interrupt Settings")
-				local Einter = Emenuint:AddBool("Interrupt?", true)
-				
-		local EmenuGap = Emenu:AddMenu("Unti-GapClose Settings")
-				local Egap0 = EmenuGap:AddLabel("Unti-GapClose Settings")
-				local Egap = EmenuGap:AddDropDown("DontTuchME",{"AllDisSetX", "SelectedSpellsWIP", "off"})
-				local Egapdis = EmenuGap:AddSlider("x",0,550,10,200)
 
 ---Tumble	
 	local Qmenu = dvmenu:AddMenu("[Tumble]:")
@@ -169,17 +171,39 @@ local dvmenu = UIMenu:AddMenu("DickVayne")
 				local QKSonoff = Qksmod:AddBool("Kill Secure", true)
 				local QKSet = Qksmod:AddDropDown("Save Q",{"TurnOff", "SaveBelowTargetHP"})
 				local QKShp = Qksmod:AddSlider("%hp",0,100,1,20)
-				local QKSinfo99 = Qksmod:AddLabel("info: just dont set ")
-				local QKSinfo98 = Qksmod:AddLabel("killsecure to off and ")
-				local QKSinfo97 = Qksmod:AddLabel("Save Q to SaveBelowTarget")
-				local QKSinfo96 = Qksmod:AddLabel("    #care")
 				
 		local Qmmp = Qmenu:AddMenu("MP Settings")
 				local Qmmpinfo10 = Qmmp:AddLabel("MP Settings")
 				local Qmmpinfo1 = Qmmp:AddLabel("MinMP to use Q in FightMode")
-				local Qmpcom = Qmmp:AddSlider("%MP",0,100,1,0)
+				local Qmpcom = Qmmp:AddSlider("%MP Fight",0,100,1,0)
 				local Qmmpinfo2 = Qmmp:AddLabel("MinMP to use Q in HarassMode")
-				local Qmphara = Qmmp:AddSlider("%MP",0,100,1,50)
+				local Qmphara = Qmmp:AddSlider("%MP Harass",0,100,1,50)
+				
+---Condemn
+	local Emenu = dvmenu:AddMenu("[Condemn]:")
+		local Emenu12 = Emenu:AddLabel("[Condemn]:")
+		local Emenustu = Emenu:AddMenu("AutoStun Settings")
+				local Emenuof = Emenustu:AddLabel("AutoStun Settings")
+				local Emenuof = Emenustu:AddBool("TryStun?", true)
+				local EmenuofT = Emenustu:AddBool("DontHideOnBush", false)
+				local Edis = Emenustu:AddSlider("PushDistance",350,450,10,400)
+				local EDRAW = Emenustu:AddMenu("Drawing")
+				local Edrawonstun = EDRAW:AddDropDown("Draw Predic?",{"Drawing_OFF", "Line"})
+				local Edrawonstun2 = EDRAW:AddRGBAMenu("Color",0xFF0000FF)
+				
+				
+				-- local Etower = Emenu:AddLabel("Unter a Tower", false) WIP
+				
+		local Emenuint = Emenu:AddMenu("Interrupt Settings")
+				local Einter0 = Emenuint:AddLabel("Interrupt Settings")
+				local Einter = Emenuint:AddDropDown("Interrupt",{"Allspells", "Sellected_spells", "DontInterrupt"})
+				
+		local EmenuGap = Emenu:AddMenu("Unti-GapClose Settings")
+				local Egap0 = EmenuGap:AddLabel("Unti-GapClose Settings")
+				local Egap = EmenuGap:AddDropDown("DontTuchME",{"AllDisSetX", "SelectedSpellsWIP", "off"})
+				local Egapdis = EmenuGap:AddSlider("x",0,550,10,200)
+				
+				
 ---BotRK
 	local RKmenu = dvmenu:AddMenu("[BotRK]:")
 	
@@ -206,7 +230,7 @@ local TSset = TSmenu:AddDropDown("WIP",{"WIP","told you","to leave","why ppl","n
 -------- Calculation
 --------------------------------
 --- SILVER BOLTS STACKS
-local function countWStacks(target) 
+function countWStacks(target) 
 	local ai = target.AsAI
     if ai and ai.IsValid then
 		for i = 0, ai.BuffCount do
@@ -223,7 +247,7 @@ local function countWStacks(target)
 	return 0
 end
 --- Q DMG
-local function getQdmg(obj)
+function getQdmg(obj)
 	local vayneQ = {0.6, 0.65, 0.7, 0.75, 0.8}
 	local dmgQ = vayneQ[Player:GetSpell(SpellSlots.Q).Level]
 	return ( (dmgQ * Player.TotalAD) + Player.TotalAD ) * (100.0 / (100 + obj.Armor ) )
@@ -235,16 +259,16 @@ function getWdmg(obj)
 		return obj.MaxHealth * dmgW
 end
 --- KS W+Qaa DMG logiv
-local function getKSQWdmg(obj)
+function getKSQWdmg(obj)
 	return getQdmg(obj) + getWdmg(obj)
 end
 --------------------------------
 -------- Tumble Logic
 --------------------------------
-local function Tumble()
-
+function Tumble()
 local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 local enemies = ObjManager.Get("enemy", "heroes")
+
 
 
 	for handle, obj in pairs(enemies) do        
@@ -268,38 +292,41 @@ local enemies = ObjManager.Get("enemy", "heroes")
 end
 
 
-local function TumbleCombat()
+function TumbleCombat()
 		
-			
+	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
+	local enemies = ObjManager.Get("enemy", "heroes")			
 			
 
 
 	if Qmcom.Value or Qmhara.Value then
 			if Player:GetSpellState(SpellSlots.Q) ~= SpellStates.Ready then return end
-			local enemies = ObjManager.Get("enemy", "heroes")
+			local enemies = ObjManager.Get("enemy", "heroes") 
 		for handle, obj in pairs(enemies) do        
 			local hero = obj.AsHero        
 			if hero and hero.IsTargetable then
 	
--------------- dont save Q
-		if QKSet.Value == "TurnOff" then
+
+
+		
+-------------- save Q
+		if QKSet.Value == "SaveBelowTargetHP" and QKSonoff.Value then
+				if DickVayne.Mode.Combo and Qmcom.Value and (Player.Mana) >= (Player.MaxMana * (Qmpcom.Value / 100)) and (hero.Health) > (hero.MaxHealth*QKShp.Value/100) then 
+						Tumble()
+				end
+				if DickVayne.Mode.Harras and Qmhara.Value and (Player.Mana) >= (Player.MaxMana * (Qmphara.Value / 100)) and (hero.Health) >= (hero.MaxHealth*QKShp.Value/100) then 
+						Tumble()
+				end
+-------------- dont save Q				
+		else 
 			if DickVayne.Mode.Combo and Qmcom.Value and (Player.Mana) > (Player.MaxMana * (Qmpcom.Value / 100)) then 
 					Tumble()
 				end
 			if DickVayne.Mode.Harras and Qmhara.Value and (Player.Mana) > (Player.MaxMana * (Qmphara.Value / 100)) then 
 					Tumble()
 				end
-			
-		end
--------------- save Q
-		if QKSet.Value == "SaveBelowTargetHP" then
-				if DickVayne.Mode.Combo and Qmcom.Value and (Player.Mana) > (Player.MaxMana * (Qmpcom.Value / 100)) and (hero.Health) > (hero.MaxHealth) * (QKShp.Value/100) then 
-						Tumble()
-				end
-				if DickVayne.Mode.Harras and Qmhara.Value and (Player.Mana) > (Player.MaxMana * (Qmphara.Value / 100)) and (hero.Health) > (hero.MaxHealth) * (QKShp.Value/100) then 
-						Tumble()
-				end
-		end
+		end	
+		
 end
 end
 end
@@ -320,25 +347,33 @@ local enemies = ObjManager.Get("enemy", "heroes")
 		
 		if hero and hero.IsTargetable and myPos:Distance(hero.Position) <= 630 and myPos:Distance(hero.Position) > 0 then
 			local PushDistance = Edis.Value
-				if hero.IsMoving then	
-					local ezPredict = hero:FastPrediction(450)
-					local PushPositionM = ezPredict + (ezPredict - Player.Position):Normalized()*(PushDistance)
-					local WallPointM = Vector.IsWall(PushPositionM) 
+			local FoundGrass = false
+			local checks = 30
+			local ChecksD = math.ceil(PushDistance / checks)
+			local tmat = (myPos:Distance(hero.Position)+PushDistance)/2200
+			local ezPredict = hero:FastPrediction(tmat)
+				for i = 1, checks do
+				local PushPositionM = Vector(ezPredict) + Vector(Vector(ezPredict) - Player.Position):Normalized()*(ChecksD*i)
+				local EndPos = hero.Position + PushPositionM
+				 if not FoundGrass and Nav.IsGrass(PushPositionM) then
 					
-						if WallPointM then
-							Input.Cast(SpellSlots.E, hero)
-						end	
-
-						
-				else
+					FoundGrass = PushPositionM
+				end
 				
-					local PushPosition = hero.Position + (hero.Position - Player.Position):Normalized()*(PushDistance)
-					local WallPoint = Vector.IsWall(PushPosition) 
-					
+				local WallPoint = Nav.IsWall(PushPositionM)
+						CastEDraw = PushPositionM
+						if Edrawonstun.Value == "Line" then
+						Renderer.DrawLine(Renderer.WorldToScreen(hero.Position), Renderer.WorldToScreen(CastEDraw), 4.0, Edrawonstun2.Value)
+						end
+
 						if WallPoint then
 							Input.Cast(SpellSlots.E, hero)
-						end	
+						if FoundGrass and EmenuofT.Value then
+						
+							delay(500, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
 
+							break
+						end	
 				end
 		end
 	end
@@ -347,10 +382,11 @@ end
 --------------------------------
 -------- Kill Secure Q
 --------------------------------
-local function AutoQ()
+function AutoQ()
 if QKSonoff.Value then
-local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
-local enemies = ObjManager.Get("enemy", "heroes")
+	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
+	local enemies = ObjManager.Get("enemy", "heroes")
+
 
 	if Player:GetSpellState(SpellSlots.Q) ~= SpellStates.Ready then return end
 		for handle, obj in pairs(enemies) do        
@@ -372,8 +408,9 @@ end
 --------------------------------
 -------- Chanling
 --------------------------------
-local function AutoEchane()
-if Einter.Value then
+
+function AutoEchane()
+if Einter.Value == "Allspells" then
 	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 	local enemies = ObjManager.Get("enemy", "heroes")
 
@@ -386,7 +423,7 @@ if Einter.Value then
 				
 				if dist <= 550 and hero.IsChanneling then
 					Input.Cast(SpellSlots.E, hero) 
-				elseif dist > 630 and hero.IsChanneling and dist < 750 and Player:GetSpellState(SpellSlots.Q) == SpellStates.Ready then
+				elseif dist >= 630 and hero.IsChanneling and dist <= 750 and Player:GetSpellState(SpellSlots.Q) == SpellStates.Ready then
 					Tumble()
 					Input.Cast(SpellSlots.E, hero)
 				end
@@ -395,33 +432,67 @@ if Einter.Value then
 		end
 end
 end
+
+function OnProcessSpell2(Source, spell)
+if Einter.Value == "Sellected_spells" then
+	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
+	local enemies = ObjManager.Get("enemy", "heroes")
+
+if Player:GetSpellState(SpellSlots.E) == SpellStates.Ready then
+	if Source.IsEnemy then 
+	
+	
+	
+	
+	local dist = myPos:Distance(Source.Position)	
+		if isAChampToInterrupt[spell.Name] then
+			if dist <= 550 then
+					Input.Cast(SpellSlots.E, Source) 
+				elseif dist >= 630 and dist <= 750 and Player:GetSpellState(SpellSlots.Q) == SpellStates.Ready then
+					Tumble()
+					Input.Cast(SpellSlots.E, Source)
+			end
+		end
+		
+	end
+end
+end
+end
 --------------------------------
 -------- GapCloser
 --------------------------------
 function OnProcessSpell(Source, spell)
 if Egap.Value == "SelectedSpellsWIP" then
+	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
+	local enemies = ObjManager.Get("enemy", "heroes")
 
 	if Source.IsEnemy then 
-		local dist = Player.Position:Distance(Source.Position)    
-			if dist <= 800 then
-			
-				if isAGapcloserUnitTarget[spell.Name] then
-					Input.Cast(SpellSlots.E, Source)
-				end
-				
-			end
+	local dist = Player.Position:DistanceSqr(Source.Position)    
 		
-			if dist <= isAGapcloserUnitTarget[range] then
-				if isAGapcloserUnitNoTarget[spell.Name] then
-					Input.Cast(SpellSlots.E, Source)
-				end
-			end
+		if isAGapcloserUnitTarget[spell.Name] then
+		if dist <= 715*715 then
+			Input.Cast(SpellSlots.E, Source)
+		end
+		end
+		
+		
+		if isAGapcloserUnitNoTarget[spell.Name] then
+			local CastTime = winapi.getTickCount()
+            local Range = isAGapcloserUnitNoTarget[spell.Name].range
+            local Speed = isAGapcloserUnitNoTarget[spell.Name].projSpeed			
+
+			    if (winapi.getTickCount() - CastTime) <= (Range/Speed) and Player:GetSpellState(SpellSlots.E) == SpellStates.Ready and dist <= 715*715 then
+
+				Input.Cast(SpellSlots.E, Source)
+		end
+		end
 		
 	end
 end
 end
 
-local function AutoE()
+
+function AutoE()
 if Egap.Value == "AllDisSetX" then
 	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 	local enemies = ObjManager.Get("enemy", "heroes")
@@ -442,10 +513,11 @@ end
 --------------------------------
 --------BotRK
 --------------------------------
-local function UseItemsCombo()	
+function UseItemsCombo()	
 if RKonoff.Value then
 	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 	local enemies = ObjManager.Get("enemy", "heroes")
+
 	
 					for i=SpellSlots.Item1, SpellSlots.Item6 do
 						local _item = Player:GetSpell(i)
@@ -482,18 +554,19 @@ end
 --------------------------------
 --------OnTick
 --------------------------------
-local function OnTick()	
+function OnTick()	
 
 	local target = ts:GetTarget(1200, ts.Priority.LowestHealth)
 	if target then 
 	TumbleCombat()
 	UseItemsCombo()	
-	end
-	
 	AutoQ()
 	AutoE()
 	AutoEchane()
 	Condemn()
+	end
+	
+
 	
 end
 
@@ -507,15 +580,16 @@ function OnLoad()
 	if Player.CharName ~= "Vayne" then return false end 
 	EventManager.RegisterCallback(Enums.Events.OnTick, OnTick)
 
+	EventManager.RegisterCallback(Enums.Events.OnProcessSpell, OnProcessSpell2)
 	EventManager.RegisterCallback(Enums.Events.OnProcessSpell, OnProcessSpell)
-Orb.Initialize()
+
 	local Key = DickVayne.Setting.Key
     EventManager.RegisterCallback(Events.OnKeyDown, function(keycode, _, _) if keycode == Key.Combo then DickVayne.Mode.Combo = true  end end)
     EventManager.RegisterCallback(Events.OnKeyUp,   function(keycode, _, _) if keycode == Key.Combo then DickVayne.Mode.Combo = false end end)	
     EventManager.RegisterCallback(Events.OnKeyDown, function(keycode, _, _) if keycode == Key.Harras then DickVayne.Mode.Harras = true  end end)
     EventManager.RegisterCallback(Events.OnKeyUp,   function(keycode, _, _) if keycode == Key.Harras then DickVayne.Mode.Harras = false end end)	
-	Game.PrintChat("----DickVayne Loaded ! ")
-	Game.PrintChat("----DickVayne:GL&HF")
+	Game.PrintChat("----DickVayne::Loaded::GL&HF")
+
 	return true
 end			
 
