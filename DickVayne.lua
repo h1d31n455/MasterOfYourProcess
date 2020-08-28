@@ -8,7 +8,7 @@
 ██. ██ ▐█▌▐███▌▐█.█▌ ███ ▐█ ▪▐▌ ▐█▀·.██▐█▌▐█▄▄▌
 ▀▀▀▀▀• ▀▀▀·▀▀▀ ·▀  ▀. ▀   ▀  ▀   ▀ • ▀▀ █▪ ▀▀▀ 
 by h1d31n455
-Version 1.2.2a
+Version 1.2.2c
 
 
 Changelog :
@@ -33,6 +33,7 @@ require("common.log")
 module("DickVayne", package.seeall, log.setup)
 
 winapi = require("utils.winapi")
+local col = require("lol/Modules/Common/Collision")
 local Orb = require("lol/Modules/Common/OGOrbWalker")
 local ts = require("lol/Modules/Common/OGsimpleTS")
 local UIMenu = require("lol/Modules/Common/Menu")
@@ -51,6 +52,7 @@ local Input = _G.CoreEx.Input
 local Vector = _G.CoreEx.Geometry.Vector
 local DistanceSqr = _G.CoreEx.Geometry.Vector.DistanceSqr
 local LineDistance = _G.CoreEx.Geometry.Vector.LineDistance
+local Collision = _G.Libs.CollisionLib
 ------------------------
 -------- Spells
 ------------------------
@@ -154,77 +156,79 @@ local DickVayne = {
 -------- Menu
 --------------------------------
 
-local dvmenu = UIMenu:AddMenu("DickVayne")
+if Player.CharName == "Vayne" then
+ dvmenu = UIMenu:AddMenu("DickVayne")
 
 ---Tumble	
-	local Qmenu = dvmenu:AddMenu("[Tumble]:")
+	 Qmenu = dvmenu:AddMenu("[Tumble]:")
 	
-		local Qmmod = Qmenu:AddLabel("[Tumble]:")
-		local Qmmod = Qmenu:AddMenu("Mode Selector")
-				local Qmmodinfo = Qmmod:AddLabel("Mode Selector")
-				local Qmmodinfo = Qmmod:AddLabel("When to use Q")
-				local Qmcom = Qmmod:AddBool("FightMode", true)
-				local Qmhara = Qmmod:AddBool("HarassMode", false)
+		 Qmmod = Qmenu:AddLabel("[Tumble]:")
+		 Qmmod = Qmenu:AddMenu("Mode Selector")
+				 Qmmodinfo = Qmmod:AddLabel("Mode Selector")
+				 Qmmodinfo = Qmmod:AddLabel("When to use Q")
+				 Qmcom = Qmmod:AddBool("FightMode", true)
+				 Qmhara = Qmmod:AddBool("HarassMode", false)
 				
-		local Qksmod = Qmenu:AddMenu("Kill Secure Settings")
-				local QKSinfo0 = Qksmod:AddLabel("Kill Secure Settings")
-				local QKSonoff = Qksmod:AddBool("Kill Secure", true)
-				local QKSet = Qksmod:AddDropDown("Save Q",{"TurnOff", "SaveBelowTargetHP"})
-				local QKShp = Qksmod:AddSlider("%hp",0,100,1,20)
+		 Qksmod = Qmenu:AddMenu("Kill Secure Settings")
+				 QKSinfo0 = Qksmod:AddLabel("Kill Secure Settings")
+				 QKSonoff = Qksmod:AddBool("Kill Secure", true)
+				 QKSet = Qksmod:AddDropDown("Save Q",{"TurnOff", "SaveBelowTargetHP"})
+				 QKShp = Qksmod:AddSlider("%hp",0,100,1,20)
 				
-		local Qmmp = Qmenu:AddMenu("MP Settings")
-				local Qmmpinfo10 = Qmmp:AddLabel("MP Settings")
-				local Qmmpinfo1 = Qmmp:AddLabel("MinMP to use Q in FightMode")
-				local Qmpcom = Qmmp:AddSlider("%MP Fight",0,100,1,0)
-				local Qmmpinfo2 = Qmmp:AddLabel("MinMP to use Q in HarassMode")
-				local Qmphara = Qmmp:AddSlider("%MP Harass",0,100,1,50)
+		 Qmmp = Qmenu:AddMenu("MP Settings")
+				 Qmmpinfo10 = Qmmp:AddLabel("MP Settings")
+				 Qmmpinfo1 = Qmmp:AddLabel("MinMP to use Q in FightMode")
+				 Qmpcom = Qmmp:AddSlider("%MP Fight",0,100,1,0)
+				 Qmmpinfo2 = Qmmp:AddLabel("MinMP to use Q in HarassMode")
+				 Qmphara = Qmmp:AddSlider("%MP Harass",0,100,1,50)
 				
 ---Condemn
-	local Emenu = dvmenu:AddMenu("[Condemn]:")
-		local Emenu12 = Emenu:AddLabel("[Condemn]:")
-		local Emenustu = Emenu:AddMenu("AutoStun Settings")
-				local Emenuof = Emenustu:AddLabel("AutoStun Settings")
-				local Emenuof = Emenustu:AddBool("TryStun?", true)
-				local EmenuofT = Emenustu:AddBool("DontHideOnBush", false)
-				local Edis = Emenustu:AddSlider("PushDistance",350,450,10,400)
-				local EDRAW = Emenustu:AddMenu("Drawing")
-				local Edrawonstun = EDRAW:AddDropDown("Draw Predic?",{"Drawing_OFF", "Line"})
-				local Edrawonstun2 = EDRAW:AddRGBAMenu("Color",0xFF0000FF)
+	 Emenu = dvmenu:AddMenu("[Condemn]:")
+		 Emenu12 = Emenu:AddLabel("[Condemn]:")
+		 Emenustu = Emenu:AddMenu("AutoStun Settings")
+				 Emenuof = Emenustu:AddLabel("AutoStun Settings")
+				 Emenuof = Emenustu:AddBool("TryStun?", true)
+				 EmenuofT = Emenustu:AddBool("DontHideOnBush", false)
+				 Edis = Emenustu:AddSlider("PushDistance",350,450,10,400)
+				 EDRAW = Emenustu:AddMenu("Drawing")
+				 Edrawonstun = EDRAW:AddDropDown("Draw Predic?",{"Drawing_OFF", "Line"})
+				 Edrawonstun2 = EDRAW:AddRGBAMenu("Color",0xFF0000FF)
 				
 				
-				-- local Etower = Emenu:AddLabel("Unter a Tower", false) WIP
+				--  Etower = Emenu:AddLabel("Unter a Tower", false) WIP
 				
-		local Emenuint = Emenu:AddMenu("Interrupt Settings")
-				local Einter0 = Emenuint:AddLabel("Interrupt Settings")
-				local Einter = Emenuint:AddDropDown("Interrupt",{"Allspells", "Sellected_spells", "DontInterrupt"})
+		 Emenuint = Emenu:AddMenu("Interrupt Settings")
+				 Einter0 = Emenuint:AddLabel("Interrupt Settings")
+				 Einter = Emenuint:AddDropDown("Interrupt",{"Allspells", "Sellected_spells", "DontInterrupt"})
 				
-		local EmenuGap = Emenu:AddMenu("Unti-GapClose Settings")
-				local Egap0 = EmenuGap:AddLabel("Unti-GapClose Settings")
-				local Egap = EmenuGap:AddDropDown("DontTuchME",{"AllDisSetX", "SelectedSpellsWIP", "off"})
-				local Egapdis = EmenuGap:AddSlider("x",0,550,10,200)
+		 EmenuGap = Emenu:AddMenu("Unti-GapClose Settings")
+				 Egap0 = EmenuGap:AddLabel("Unti-GapClose Settings")
+				 Egap = EmenuGap:AddDropDown("DontTuchME",{"AllDisSetX", "SelectedSpellsWIP", "off"})
+				 Egapdis = EmenuGap:AddSlider("x",0,550,10,200)
 				
 				
 ---BotRK
-	local RKmenu = dvmenu:AddMenu("[BotRK]:")
+	 RKmenu = dvmenu:AddMenu("[BotRK]:")
 	
-		local RKmmod0 = RKmenu:AddLabel("[BotRK]:")
-		local RKmmod = RKmenu:AddMenu("Mode Selector")
-				local RKmmodinfo0 = RKmmod:AddLabel("Mode Selector")
-				local RKmmodinfo = RKmmod:AddLabel("When to use BotRK")
-				local RKonoff = RKmmod:AddBool("on/off", true)
-				local RKmcom = RKmmod:AddBool("FightMode", true)
-				local RKmhara = RKmmod:AddBool("HarassMode", false)
+		 RKmmod0 = RKmenu:AddLabel("[BotRK]:")
+		 RKmmod = RKmenu:AddMenu("Mode Selector")
+				 RKmmodinfo0 = RKmmod:AddLabel("Mode Selector")
+				 RKmmodinfo = RKmmod:AddLabel("When to use BotRK")
+				 RKonoff = RKmmod:AddBool("on/off", true)
+				 RKmcom = RKmmod:AddBool("FightMode", true)
+				 RKmhara = RKmmod:AddBool("HarassMode", false)
 				
-		local RKmhp = RKmenu:AddMenu("HP Settings")
-				local RKinfo0 = RKmhp:AddLabel("HP Settings")
-				local RKinfo = RKmhp:AddLabel("Setting to us BotRK")
-				local RKphp = RKmhp:AddSlider("Max Own HP",0,100,1,50)
-				local RKehp = RKmhp:AddSlider("Min Enamy HP",0,100,1,20)
+		 RKmhp = RKmenu:AddMenu("HP Settings")
+				 RKinfo0 = RKmhp:AddLabel("HP Settings")
+				 RKinfo = RKmhp:AddLabel("Setting to us BotRK")
+				 RKphp = RKmhp:AddSlider("Max Own HP",0,100,1,50)
+				 RKehp = RKmhp:AddSlider("Min Enamy HP",0,100,1,20)
 ---Target Selector			
-local TSmenu = dvmenu:AddMenu("[Target Selector]:")
-local TSset = TSmenu:AddLabel("nothing here leave")
-local TSset = TSmenu:AddDropDown("WIP",{"WIP","told you","to leave","why ppl","never","listen","to me","fuck you!"})
--- local TSset = TSmenu:AddDropDown("WIP",{"LowestHealth","LowestMaxHealth","LowestArmor","Closest","CloseToMouse","MostAD","MostAP"})
+ TSmenu = dvmenu:AddMenu("[Target Selector]:")
+ TSset = TSmenu:AddLabel("nothing here leave")
+ TSset = TSmenu:AddDropDown("WIP",{"WIP","told you","to leave","why ppl","never","listen","to me","fuck you!"})
+--  TSset = TSmenu:AddDropDown("WIP",{"LowestHealth","LowestMaxHealth","LowestArmor","Closest","CloseToMouse","MostAD","MostAP"})
+end
 
 --------------------------------
 -------- Calculation
@@ -350,30 +354,46 @@ local enemies = ObjManager.Get("enemy", "heroes")
 			local FoundGrass = false
 			local checks = 30
 			local ChecksD = math.ceil(PushDistance / checks)
+
 			local tmat = (myPos:Distance(hero.Position)+PushDistance)/2200
 			local ezPredict = hero:FastPrediction(tmat)
+			local myPredict = Player:FastPrediction(tmat)
 				for i = 1, checks do
-				local PushPositionM = Vector(ezPredict) + Vector(Vector(ezPredict) - Player.Position):Normalized()*(ChecksD*i)
-				local EndPos = hero.Position + PushPositionM
+				local PushPositionM = Vector(ezPredict) + Vector(Vector(ezPredict) - Vector(myPredict)):Normalized()*(ChecksD*i)
+
 				 if not FoundGrass and Nav.IsGrass(PushPositionM) then
 					
 					FoundGrass = PushPositionM
 				end
 				
-				local WallPoint = Nav.IsWall(PushPositionM)
+				-- local WallPoint = Nav.IsWall(PushPositionM)
+				local WallPoint = Collision.SearchWall(ezPredict, PushPositionM, 1, 2200, tmat)
 						CastEDraw = PushPositionM
 						if Edrawonstun.Value == "Line" then
-						Renderer.DrawLine(Renderer.WorldToScreen(hero.Position), Renderer.WorldToScreen(CastEDraw), 4.0, Edrawonstun2.Value)
+						Renderer.DrawLine(Renderer.WorldToScreen(hero.Position), Renderer.WorldToScreen(CastEDraw), 1.0, Edrawonstun2.Value)
 						end
+						
 
-						if WallPoint then
+		
+						if WallPoint.Result then
+						-- if WallPoint then
+							
 							Input.Cast(SpellSlots.E, hero)
 						if FoundGrass and EmenuofT.Value then
 						
 							delay(500, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
 
 							break
+							
+
+						
 						end	
+
+						
+
+				
+
+					
 				end
 		end
 	end
