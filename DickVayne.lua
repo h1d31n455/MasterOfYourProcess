@@ -8,10 +8,16 @@
 ██. ██ ▐█▌▐███▌▐█.█▌ ███ ▐█ ▪▐▌ ▐█▀·.██▐█▌▐█▄▄▌
 ▀▀▀▀▀• ▀▀▀·▀▀▀ ·▀  ▀. ▀   ▀  ▀   ▀ • ▀▀ █▪ ▀▀▀ 
 by h1d31n455
-Version 1.2.2c
+Version 1.2.3 
 
 
 Changelog :
+1.1a
+- make it work with xD hutilyu no no 
+
+1.1b 
+- works xD
+
 1.2.2a
 - Upgrade Condemn Logic
 - add Predic Condemn Drawing
@@ -22,8 +28,15 @@ Changelog :
 [If u find any Skill you will find a way to tell me or add it your self]
 [list of all skills https://github.com/h1d31n455/MasterOfYourProcess/wiki/DickVayne-Skill-list]
 
+1.2.3 
+- Upgrade Ward on Bush afret Condemn
+- You know I have no idea about what I'm doing so Now DickVayne should works not fucking every thing u have load too xD 
+- 
 
-
+--to do ? 
+- Upgrade Condemn Prediction
+- Upgrade Tumble Logic
+- tidy up this script cuz its a mess
 
 ]]--
 ------------------------
@@ -69,7 +82,7 @@ local _R = SpellSlots.R
 -------- Spell Table
 --------------------------------
  
-isAGapcloserUnitTarget = {
+local isAGapcloserUnitTarget = {
         ['AkaliR']					= {true, Champ = 'Akali', 		spellKey = 'R'},
         ['Headbutt']     			= {true, Champ = 'Alistar', 	spellKey = 'W'},
         ['DianaE']       	= {true, Champ = 'Diana', 		spellKey = 'E'},
@@ -89,7 +102,7 @@ isAGapcloserUnitTarget = {
 		['HecarimE']				= {true, Champ = 'Hecarim', 	spellKey = 'E'},
     }
 
-isAGapcloserUnitNoTarget = {
+local isAGapcloserUnitNoTarget = {
         ['GalioE']					= {true, Champ = 'Galio', 		range = 650,   	projSpeed = 2300, spellKey = 'E'},
         ['GragasE']					= {true, Champ = 'Gragas', 		range = 600,   	projSpeed = 2000, spellKey = 'E'},
         ['GravesMove']				= {true, Champ = 'Graves', 		range = 425,   	projSpeed = 2000, spellKey = 'E'},
@@ -110,7 +123,7 @@ isAGapcloserUnitNoTarget = {
 		['DariusAxeGrabCone']				= {true, Champ = 'Darius', 	range = 550,  	projSpeed = 2000, spellKey = 'E'},
     }
 
-isAChampToInterrupt = {
+local isAChampToInterrupt = {
 
 
         ['KatarinaR']					= {true, Champ = 'Katarina',	spellKey = 'R'},
@@ -234,7 +247,7 @@ end
 -------- Calculation
 --------------------------------
 --- SILVER BOLTS STACKS
-function countWStacks(target) 
+local function countWStacks(target) 
 	local ai = target.AsAI
     if ai and ai.IsValid then
 		for i = 0, ai.BuffCount do
@@ -251,25 +264,25 @@ function countWStacks(target)
 	return 0
 end
 --- Q DMG
-function getQdmg(obj)
+local function getQdmg(obj)
 	local vayneQ = {0.6, 0.65, 0.7, 0.75, 0.8}
 	local dmgQ = vayneQ[Player:GetSpell(SpellSlots.Q).Level]
 	return ( (dmgQ * Player.TotalAD) + Player.TotalAD ) * (100.0 / (100 + obj.Armor ) )
 end
 --- W DMG logic
-function getWdmg(obj)
+local function getWdmg(obj)
 		local VayneW = {0.04, 0.065, 0.09, 0.115, 0.14}
 		local dmgW = VayneW[Player:GetSpell(SpellSlots.W).Level]
 		return obj.MaxHealth * dmgW
 end
 --- KS W+Qaa DMG logiv
-function getKSQWdmg(obj)
+local function getKSQWdmg(obj)
 	return getQdmg(obj) + getWdmg(obj)
 end
 --------------------------------
 -------- Tumble Logic
 --------------------------------
-function Tumble()
+local function Tumble()
 local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 local enemies = ObjManager.Get("enemy", "heroes")
 
@@ -296,7 +309,7 @@ local enemies = ObjManager.Get("enemy", "heroes")
 end
 
 
-function TumbleCombat()
+local function TumbleCombat()
 		
 	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 	local enemies = ObjManager.Get("enemy", "heroes")			
@@ -339,7 +352,7 @@ end
 --------------------------------
 -------- Condemn Logic
 --------------------------------
-function Condemn()
+local function Condemn()
 if Emenuof.Value then
 local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 local enemies = ObjManager.Get("enemy", "heroes")
@@ -380,8 +393,20 @@ local enemies = ObjManager.Get("enemy", "heroes")
 							
 							Input.Cast(SpellSlots.E, hero)
 						if FoundGrass and EmenuofT.Value then
+
+
+								
+
 						
-							delay(500, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
+						
+						
+						
+						
+						
+						EventManager.RegisterCallback(Events.OnVisionLost, delay(1250, Input.Cast(SpellSlots.Trinket, FoundGrass))) end
+						
+						
+							-- delay(1250, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
 
 							break
 							
@@ -399,10 +424,12 @@ local enemies = ObjManager.Get("enemy", "heroes")
 	end
 end
 end
+
+
 --------------------------------
 -------- Kill Secure Q
 --------------------------------
-function AutoQ()
+local function AutoQ()
 if QKSonoff.Value then
 	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 	local enemies = ObjManager.Get("enemy", "heroes")
@@ -429,7 +456,7 @@ end
 -------- Chanling
 --------------------------------
 
-function AutoEchane()
+local function AutoEchane()
 if Einter.Value == "Allspells" then
 	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 	local enemies = ObjManager.Get("enemy", "heroes")
@@ -453,7 +480,7 @@ if Einter.Value == "Allspells" then
 end
 end
 
-function OnProcessSpell2(Source, spell)
+local function OnProcessSpell2(Source, spell)
 if Einter.Value == "Sellected_spells" then
 	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 	local enemies = ObjManager.Get("enemy", "heroes")
@@ -481,7 +508,7 @@ end
 --------------------------------
 -------- GapCloser
 --------------------------------
-function OnProcessSpell(Source, spell)
+local function OnProcessSpell(Source, spell)
 if Egap.Value == "SelectedSpellsWIP" then
 	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 	local enemies = ObjManager.Get("enemy", "heroes")
@@ -512,7 +539,7 @@ end
 end
 
 
-function AutoE()
+local function AutoE()
 if Egap.Value == "AllDisSetX" then
 	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 	local enemies = ObjManager.Get("enemy", "heroes")
@@ -533,7 +560,7 @@ end
 --------------------------------
 --------BotRK
 --------------------------------
-function UseItemsCombo()	
+local function UseItemsCombo()	
 if RKonoff.Value then
 	local myPos, myRange = Player.Position, (Player.AttackRange + Player.BoundingRadius)
 	local enemies = ObjManager.Get("enemy", "heroes")
@@ -574,7 +601,7 @@ end
 --------------------------------
 --------OnTick
 --------------------------------
-function OnTick()	
+local function OnTick()	
 
 	local target = ts:GetTarget(1200, ts.Priority.LowestHealth)
 	if target then 
@@ -584,6 +611,8 @@ function OnTick()
 	AutoE()
 	AutoEchane()
 	Condemn()
+	EventManager.RegisterCallback(Enums.Events.OnProcessSpell, OnProcessSpell2)
+	EventManager.RegisterCallback(Enums.Events.OnProcessSpell, OnProcessSpell)
 	end
 	
 
@@ -600,8 +629,7 @@ function OnLoad()
 	if Player.CharName ~= "Vayne" then return false end 
 	EventManager.RegisterCallback(Enums.Events.OnTick, OnTick)
 
-	EventManager.RegisterCallback(Enums.Events.OnProcessSpell, OnProcessSpell2)
-	EventManager.RegisterCallback(Enums.Events.OnProcessSpell, OnProcessSpell)
+
 
 	local Key = DickVayne.Setting.Key
     EventManager.RegisterCallback(Events.OnKeyDown, function(keycode, _, _) if keycode == Key.Combo then DickVayne.Mode.Combo = true  end end)
