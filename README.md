@@ -27,6 +27,12 @@ Changelog :
 
 [list of all skills https://github.com/h1d31n455/MasterOfYourProcess/wiki/DickVayne-Skill-list]
 
+1.2.2c
+
+- small update menu will be hidden when not using DickVayne
+- a little change to Condemn Logic so Modules\Common\Collision.lua is needed 
+( you can downloa it with Download robur - master of your process process on main page)
+
 1.2.3 
 - Upgrade Ward on Bush afret Condemn
 - You know I have no idea about what I'm doing so Now DickVayne should works not fucking every thing u have load too xD 
