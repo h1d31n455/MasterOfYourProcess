@@ -70,7 +70,7 @@ local Vector = _G.CoreEx.Geometry.Vector
 local DistanceSqr = _G.CoreEx.Geometry.Vector.DistanceSqr
 local LineDistance = _G.CoreEx.Geometry.Vector.LineDistance
 local Collision = _G.Libs.CollisionLib
-local RegisterCallback = EventManager.RegisterCallback
+local FireEvent = EventManager.FireEvent
 ------------------------
 -------- Spells
 ------------------------
@@ -397,21 +397,25 @@ local enemies = ObjManager.Get("enemy", "heroes")
 						-- if WallPoint then
 							
 							Input.Cast(SpellSlots.E, hero)
-						if FoundGrass and EmenuofT.Value then
+						if FoundGrass and EmenuofT.Value and hero.IsAlive and myPos:Distance(hero.Position) <= 1000 then
+								 
+
+								local xaaa = FoundGrass
+
+						
+						
+						
+						
+						
+							EventManager.RegisterCallback(Events.OnVisionLost, function()
+							if xaaa == FoundGrass then 
+							Input.Cast(SpellSlots.Trinket, FoundGrass) 
+							end 
+							end)
+
+						-- delay(1250, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
 
 
-								
-
-						
-						
-						
-						
-						
-						
-
-						-- delay(1250, Input.Cast(SpellSlots.Trinket, FoundGrass) end
-
-RegisterCallback(Events.OnVisionLost, function() Input.Cast(SpellSlots.Trinket, FoundGrass)end) end
 							-- delay(500, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
 
 							
@@ -431,7 +435,7 @@ RegisterCallback(Events.OnVisionLost, function() Input.Cast(SpellSlots.Trinket, 
 	end
 end
 end
-
+end
 
 
 --------------------------------
@@ -645,6 +649,12 @@ function OnLoad()
     EventManager.RegisterCallback(Events.OnKeyDown, function(keycode, _, _) if keycode == Key.Harras then DickVayne.Mode.Harras = true  end end)
     EventManager.RegisterCallback(Events.OnKeyUp,   function(keycode, _, _) if keycode == Key.Harras then DickVayne.Mode.Harras = false end end)	
 	Game.PrintChat("----DickVayne::Loaded::GL&HF")
+
+
+ 
+	
+
+
 
 	return true
 end			
