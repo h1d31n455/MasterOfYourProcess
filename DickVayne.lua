@@ -408,10 +408,10 @@ local enemies = ObjManager.Get("enemy", "heroes")
 						
 						
 						
-						EventManager.RegisterCallback(Events.OnVisionLost, delay(1250, Input.Cast(SpellSlots.Trinket, FoundGrass))) end
 						
 						
-							-- delay(1250, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
+						
+							delay(1250, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
 
 							break
 							
