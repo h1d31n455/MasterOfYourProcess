@@ -8,7 +8,7 @@
 ██. ██ ▐█▌▐███▌▐█.█▌ ███ ▐█ ▪▐▌ ▐█▀·.██▐█▌▐█▄▄▌
 ▀▀▀▀▀• ▀▀▀·▀▀▀ ·▀  ▀. ▀   ▀  ▀   ▀ • ▀▀ █▪ ▀▀▀ 
 by h1d31n455
-Version 1.2.3 
+Version 1.2.3a
 
 
 Changelog :
@@ -33,9 +33,15 @@ Changelog :
 - a little change to Condemn Logic so Modules\Common\Collision.lua is needed 
 ( you can downloa it with Download robur - master of your process process on main page)
 
-1.2.3 
-- Upgrade Ward on Bush afret Condemn
+1.2.3
+--mistake
+
+1.2.3a
+- --- im done IsVisible Dont work XD 
 - You know I have no idea about what I'm doing so Now DickVayne should works not fucking every thing u have load too xD 
+- upgrade Condemn Prediction it works better then my math before 
+- drawing may be a little glitchy 
+
 
 --to do ? 
 - Upgrade Condemn Prediction
@@ -373,9 +379,9 @@ local enemies = ObjManager.Get("enemy", "heroes")
 			local checks = 30
 			local ChecksD = math.ceil(PushDistance / checks)
 
-			local tmat = (myPos:Distance(hero.Position)+PushDistance)/2200
-			local ezPredict = hero:FastPrediction(tmat)
-			local myPredict = Player:FastPrediction(tmat)
+			-- local tmat = (myPos:Distance(hero.Position)+PushDistance)/2200
+			local ezPredict = hero:FastPrediction(113)
+			local myPredict = Player:FastPrediction(113)
 				for i = 1, checks do
 				local PushPositionM = Vector(ezPredict) + Vector(Vector(ezPredict) - Vector(myPredict)):Normalized()*(ChecksD*i)
 
@@ -385,7 +391,7 @@ local enemies = ObjManager.Get("enemy", "heroes")
 				end
 				
 				-- local WallPoint = Nav.IsWall(PushPositionM)
-				local WallPoint = Collision.SearchWall(ezPredict, PushPositionM, 1, 2200, tmat)
+				local WallPoint = Collision.SearchWall(ezPredict, PushPositionM, 1, 2000, 0.25)
 						CastEDraw = PushPositionM
 						if Edrawonstun.Value == "Line" then
 						Renderer.DrawLine(Renderer.WorldToScreen(hero.Position), Renderer.WorldToScreen(CastEDraw), 1.0, Edrawonstun2.Value)
@@ -397,23 +403,14 @@ local enemies = ObjManager.Get("enemy", "heroes")
 						-- if WallPoint then
 							
 							Input.Cast(SpellSlots.E, hero)
-						if FoundGrass and EmenuofT.Value and hero.IsAlive and myPos:Distance(hero.Position) <= 1000 then
-								 
+						if FoundGrass and EmenuofT.Value then
+							
+							
 
-								local xaaa = FoundGrass
 
-						
-						
-						
-						
-						
-							EventManager.RegisterCallback(Events.OnVisionLost, function()
-							if xaaa == FoundGrass then 
-							Input.Cast(SpellSlots.Trinket, FoundGrass) 
-							end 
-							end)
 
-						-- delay(1250, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
+
+						delay(1250, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
 
 
 							-- delay(500, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
@@ -435,7 +432,7 @@ local enemies = ObjManager.Get("enemy", "heroes")
 	end
 end
 end
-end
+
 
 
 --------------------------------
