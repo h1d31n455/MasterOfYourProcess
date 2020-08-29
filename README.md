@@ -33,10 +33,16 @@ Changelog :
 - a little change to Condemn Logic so Modules\Common\Collision.lua is needed 
 ( you can downloa it with Download robur - master of your process process on main page)
 
-1.2.3 
-- Upgrade Ward on Bush afret Condemn
+1.2.3
+
+--mistake
+
+1.2.3a
+- im done IsVisible Dont work XD 
 - You know I have no idea about what I'm doing so Now DickVayne should works not fucking every thing u have load too xD 
-- 
+- upgrade Condemn Prediction it works better then my math before 
+- drawing may be a little glitchy 
+
 
 --to do ? 
 - Upgrade Condemn Prediction
