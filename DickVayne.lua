@@ -36,7 +36,6 @@ Changelog :
 1.2.3 
 - Upgrade Ward on Bush afret Condemn
 - You know I have no idea about what I'm doing so Now DickVayne should works not fucking every thing u have load too xD 
-- 
 
 --to do ? 
 - Upgrade Condemn Prediction
@@ -71,6 +70,7 @@ local Vector = _G.CoreEx.Geometry.Vector
 local DistanceSqr = _G.CoreEx.Geometry.Vector.DistanceSqr
 local LineDistance = _G.CoreEx.Geometry.Vector.LineDistance
 local Collision = _G.Libs.CollisionLib
+local RegisterCallback = EventManager.RegisterCallback
 ------------------------
 -------- Spells
 ------------------------
@@ -408,11 +408,13 @@ local enemies = ObjManager.Get("enemy", "heroes")
 						
 						
 						
-						
-						
-						
-							delay(1250, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
 
+						-- delay(1250, Input.Cast(SpellSlots.Trinket, FoundGrass) end
+
+RegisterCallback(Events.OnVisionLost, function() Input.Cast(SpellSlots.Trinket, FoundGrass)end) end
+							-- delay(500, Input.Cast(SpellSlots.Trinket, FoundGrass)) end
+
+							
 							break
 							
 
@@ -429,6 +431,7 @@ local enemies = ObjManager.Get("enemy", "heroes")
 	end
 end
 end
+
 
 
 --------------------------------
@@ -620,7 +623,7 @@ local function OnTick()
 	EventManager.RegisterCallback(Enums.Events.OnProcessSpell, OnProcessSpell)
 	end
 	
-
+	
 	
 end
 
