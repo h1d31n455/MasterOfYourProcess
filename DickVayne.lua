@@ -8,7 +8,7 @@
 ██. ██ ▐█▌▐███▌▐█.█▌ ███ ▐█ ▪▐▌ ▐█▀·.██▐█▌▐█▄▄▌
 ▀▀▀▀▀• ▀▀▀·▀▀▀ ·▀  ▀. ▀   ▀  ▀   ▀ • ▀▀ █▪ ▀▀▀ 
 by h1d31n455
-Version 1.3.0
+Version 1.3.1
 
 
 Changelog :
@@ -54,6 +54,10 @@ Changelog :
 
 [dev:GetEnemisInRange,GetturretsisInRange,sReady,CircleCircleIntersection,IsFacing]
 
+1.3.1
+	- better ++ tumble logic
+	- Can Use Q ?
+
 --to do ? 
 - Upgrade Condemn Prediction
 - R Logic
@@ -70,6 +74,7 @@ module("DickVayne", package.seeall, log.setup)
 winapi = require("utils.winapi")
 local col = require("lol/Modules/Common/Collision")
 local Orb = require("lol/Modules/Common/OGOrbWalker")
+
 local ts = require("lol/Modules/Common/OGsimpleTS")
 
 local UIMenu = require("lol/Modules/Common/Menu")
@@ -205,7 +210,7 @@ if Player.CharName == "Vayne" then
 		 Emenustu = Emenu:AddMenu("AutoStun Settings")
 				 Emenuof = Emenustu:AddLabel("AutoStun Settings")
 				 Emenuof = Emenustu:AddBool("TryStun?", true)
-				 EmenuofT = Emenustu:AddBool("WardBrokenWIP", false) ---DontHideOnBush
+
 				 Edis = Emenustu:AddSlider("PushDistance",350,450,10,400)
 				 EDRAW = Emenustu:AddMenu("Drawing")
 				 Edrawonstun = EDRAW:AddDropDown("Draw Predic?",{"Drawing_OFF", "Line"})
@@ -243,12 +248,13 @@ if Player.CharName == "Vayne" then
 ---QSS
 	QSSmenu = dvmenu:AddMenu("[QSS]:")	
 		QSSmmod0 = QSSmenu:AddLabel("[QSS]:")
+		QSSonoff = QSSmenu:AddBool("UseQSS", true)
 						 QSSmmod01 = QSSmenu:AddBool("Taunt", true)
 						 QSSmmod02 = QSSmenu:AddBool("Stun", true)
 						 QSSmmod03 = QSSmenu:AddBool("Silence", true)
 						 QSSmmod04 = QSSmenu:AddBool("Polymorph", true)
 						 QSSmmod05 = QSSmenu:AddBool("Slow", false)
-						 QSSmmod06 = QSSmenu:AddBool("Snare", false)
+						 QSSmmod06 = QSSmenu:AddBool("Snare", true)
 						 QSSmmod07 = QSSmenu:AddBool("AttackSpeedSlow", false)
 						 QSSmmod08 = QSSmenu:AddBool("NearSight", false)
 						 QSSmmod09 = QSSmenu:AddBool("Fear", true)
@@ -257,7 +263,7 @@ if Player.CharName == "Vayne" then
 						 QSSmmod11 = QSSmenu:AddBool("Blind", true)
 						 QSSmmod13 = QSSmenu:AddBool("Asleep", false)
 						 QSSmmod14 = QSSmenu:AddBool("Drowsy", true) 
-						 QSSmmod15 = QSSmenu:AddBool("Knockback", true) 
+						 QSSmmod15 = QSSmenu:AddBool("Knockback", false) 
 						 QSSmmod16 = QSSmenu:AddBool("Flee", false) 
 						 QSSmmod17 = QSSmenu:AddBool("Disarm", false) 
 						 QSSmmod18 = QSSmenu:AddBool("Knockup", false) 
@@ -291,11 +297,11 @@ local DickVayne = {
         LastHit = false,				--- WIP
         LaneFreeze = false,				--- WIP
     },
-	
-	LastQ = 0,
 	LastAA = 0,
+	-- LastQ = 0,
+	CanQ = false,
 	Target = nil,
-	LastReset = Game.GetTime(),
+
 
 }
 
@@ -384,7 +390,7 @@ function QSS(Player, buffInst)
 		if _item ~= nil and _item then
 		-- Auto QSS
 			if _item.Name == "QuicksilverSash" or _item.Name == "ItemMercurial" then
-				if Player:GetSpellState(i) == SpellStates.Ready then
+				if Player:GetSpellState(i) == SpellStates.Ready and QSSonoff.Value then
 					if (buffInst.BuffType == BuffTypes.Taunt and QSSmmod01.Value) or (buffInst.BuffType == BuffTypes.Stun and QSSmmod02.Value) or (buffInst.BuffType == BuffTypes.Silence and QSSmmod03.Value) or (buffInst.BuffType == BuffTypes.Polymorph and QSSmmod04.Value) or (buffInst.BuffType == BuffTypes.Slow and QSSmmod05.Value) or (buffInst.BuffType == BuffTypes.Snare and QSSmmod06.Value) or (buffInst.BuffType == BuffTypes.AttackSpeedSlow and QSSmmod07.Value) or (buffInst.BuffType == BuffTypes.NearSight and QSSmmod08.Value) or (buffInst.BuffType == BuffTypes.Fear and QSSmmod09.Value) or (buffInst.BuffType == BuffTypes.Charm and QSSmmod10.Value) or (buffInst.BuffType == BuffTypes.Suppression  and QSSmmod11.Value) or (buffInst.BuffType == BuffTypes.Blind  and QSSmmod12.Value) or (buffInst.BuffType == BuffTypes.Asleep  and QSSmmod13.Value) or (buffInst.BuffType == BuffTypes.Drowsy  and QSSmmod14.Value) or (buffInst.BuffType == BuffTypes.Knockback  and QSSmmod15.Value) or (buffInst.BuffType == BuffTypes.Flee  and QSSmmod16.Value) or (buffInst.BuffType == BuffTypes.Disarm  and QSSmmod17.Value) or (buffInst.BuffType == BuffTypes.Knockup  and QSSmmod18.Value) or (buffInst.BuffType == BuffTypes.Grounded  and QSSmmod19.Value) or (buffInst.BuffType == BuffTypes.Obscured  and QSSmmod20.Value) then
 						delay(500, Input.Cast(i))
 					end
@@ -420,12 +426,25 @@ function UseItemsCombo()
 	end
 end	
 --------ResetAA
-function ResetAA()
-        if Game.GetTime() > DickVayne.LastReset + 1 and Player:GetBuff("vaynetumblebonus") then
-            -- ResetAutoAttack()
-            DickVayne.LastReset = Game.GetTime()
+------Q
+local function LastQTime(Player, spell)
+		if spell.Name == "VayneTumble" then
+			DickVayne.CanQ = false
+end
+end	
+local function LastAATime(Player,spell)
+        if spell.IsBasicAttack then
+		-- DickVayne.CanQ = true
+        DickVayne.LastAA = winapi.getTickCount()
         end
-    end	
+		if winapi.getTickCount() < DickVayne.LastAA + Player.AttackDelay then
+		DickVayne.CanQ = true
+		end
+end
+
+
+
+	--VayneTumble.
 --------CircleCircleIntersection
 function CircleCircleIntersection(c1, c2, r1, r2)
         local D = c1:Distance(c2)
@@ -454,58 +473,12 @@ function IsFacing(unit, p2)
 --------------------------------
 -------- Tumble
 --------------------------------
--------- DrawTumble Logic
--- local function DrawTumbleMode()
-	-- local myPos = Player.Position
-				-- local ModeChaker = TumbleMode(myPos, 1800)
-				-- - TeamF
-				-- if ModeChaker.TeamF == true then
-				-- Renderer.DrawText(Player.HealthBarScreenPos-Vector(-50,-10,0), Vector(100,100,0), 'TeamF', 0xFF000000)
-				-- - LaneDuo
-				-- elseif ModeChaker.LaneDuo == true then
-				-- Renderer.DrawText(Player.HealthBarScreenPos-Vector(-50,-10,0), Vector(100,100,0), 'LaneDuo', 0xFF008000)
-				-- - GankE
-				-- elseif ModeChaker.GankE == true then	
-				-- Renderer.DrawText(Player.HealthBarScreenPos-Vector(-50,-10,0), Vector(100,100,0), 'GankEnemy', 0xFFFF0000)
-				-- - GankA
-				-- elseif ModeChaker.GankA == true then	
-				-- Renderer.DrawText(Player.HealthBarScreenPos-Vector(-50,-10,0), Vector(100,100,0), 'GankAlly', 0xFF0000FF)
-				-- - Solo
-				-- elseif ModeChaker.Solo == true then	
-				-- Renderer.DrawText(Player.HealthBarScreenPos-Vector(-50,-10,0), Vector(100,100,0), 'Solo', 0xFF008000)
-				-- - twoVSone
-				-- elseif ModeChaker.twoVSone == true then					
-				-- Renderer.DrawText(Player.HealthBarScreenPos-Vector(-50,-10,0), Vector(100,100,0), 'twoVSone', 0xFFFF0000)
-				-- end 
-				
 
-				
-	-- end
--------- TumbleMode
--- function TumbleMode(pos, dis)
-	-- local res = {TeamF = false, LaneDuo = false, GankE = false, Solo = false, GankA = false, twoVSone = false}
-	-- local enemytumble = GetEnemisInRange(pos, dis, 200, 250, 5, "enemy")
-	-- local allytumble = GetEnemisInRange(pos, dis, 200, 250, 5, "ally")
-		-- if #enemytumble.Objects >= 3 and #allytumble.Objects >= 3 then
-			-- res.TeamF = true
-		-- elseif #enemytumble.Objects == 2 and #allytumble.Objects == 2 then
-			-- res.LaneDuo = true
-		-- elseif #enemytumble.Objects >= 2 and #allytumble.Objects < #enemytumble.Objects then
-			-- res.GankE = true
-		-- elseif #enemytumble.Objects >= 1 and #allytumble.Objects > #enemytumble.Objects then
-			-- res.GankA = true	
-		-- elseif #enemytumble.Objects == 1 and #allytumble.Objects == #enemytumble.Objects then
-			-- res.Solo = true
-		-- elseif #enemytumble.Objects == 1 and #allytumble.Objects > #enemytumble.Objects then
-			-- res.twoVSone = true
-		-- end
-	-- return res
--- end
 --------BestTumblePos
-function GetBestTumblePos()
+function GetBestTumblePos(target)
 	local myPos = Player.Position
         -- local logic = TumbleMode(myPos, 1800)
-        local target = DickVayne.Target
+        local target = target or DickVayne.Target
         if not target then return end
 			if QmMode.Value == "Smart" then
 				return GetSmartTumblePos(target)
@@ -546,7 +519,7 @@ function GetKitingTumblePos(target)
         local hP, tP = Player.Position, target.Position       
         local posToKite  = hP:Extended(tP, -300)
         local posToMouse = hP:Extended(mousePos, 300) 
-        local range = Player.AttackRange 
+        local range = Player.AttackRange + Player.BoundingRadius
         --
         if     not IsDangerousPosition(posToKite)  and tP:Distance(posToKite)  <= range then
             return posToKite 
@@ -558,7 +531,7 @@ function GetKitingTumblePos(target)
 function GetAggressiveTumblePos(target)
 	local mousePos = Renderer.GetMousePos()
 	local myPos = Player.Position
-        local root1, root2 = CircleCircleIntersection(myPos, target.Position, Player.AttackRange, 500)
+        local root1, root2 = CircleCircleIntersection(myPos, target.Position, (Player.AttackRange+Player.BoundingRadius), 500)
         if root1 and root2 then
             local closest = root1:Distance(mousePos) < root2:Distance(mousePos) and root1 or root2            
             return myPos:Extended(closest, 300)
@@ -611,7 +584,7 @@ function IsDangerousPosition(pos)
         local heroList = GetEnemisInRange(myPos, 1200, huge, 250, 5, "enemy")
         for i=1, #heroList.Objects do --Max 5
             local enemy = heroList.Objects[i] 
-            local range = enemy.AttackRange   
+            local range = enemy.AttackRange + enemy.BoundingRadius  
             if range < 500 and enemy:Distance(pos) < range then return true end      
         end        
     end	
@@ -623,10 +596,10 @@ local function TumbleCombat()
 		if not sReady(_Q) then return end
 
 
-						if DickVayne.Mode.Combo and Qmcom.Value and (Player.Mana) > (Player.MaxMana * (Qmpcom.Value / 100)) then 
+						if DickVayne.Mode.Combo and Qmcom.Value and (Player.Mana) > (Player.MaxMana * (Qmpcom.Value / 100)) and DickVayne.CanQ then 
 							Cast(_Q, tPos)
 						end
-						if DickVayne.Mode.Harras and Qmhara.Value and (Player.Mana) > (Player.MaxMana * (Qmphara.Value / 100)) then 
+						if DickVayne.Mode.Harras and Qmhara.Value and (Player.Mana) > (Player.MaxMana * (Qmphara.Value / 100)) and DickVayne.CanQ then 
 							Cast(_Q, tPos)
 						end
 	end			
@@ -640,13 +613,13 @@ local function QKS()
 			for handle, obj in pairs(enemies) do        
 				local hero = obj.AsHero        
 				if hero and hero.IsTargetable then
-						local tPos = GetAggressiveTumblePos(hero) 
+						local tPos = GetBestTumblePos(hero)
 					local buffCountBolts = countWStacks(hero) 
 						-- if getQdmg(hero) > (hero.Health) then
-						if (DamageLib.GetAutoAttackDamage(Player,hero)+DamageLib.CalculatePhysicalDamage(Player,hero,getQdmg())) > (hero.Health) then
+						if (DamageLib.GetAutoAttackDamage(Player,hero)+DamageLib.CalculatePhysicalDamage(Player,hero,getQdmg())) > (hero.Health)  and DickVayne.CanQ then
 							Cast(_Q, tPos)	
 						end
-						if buffCountBolts == 2 and (DamageLib.GetAutoAttackDamage(Player,hero)+DamageLib.CalculatePhysicalDamage(Player,hero,getQdmg())+getWdmg(hero)) > (hero.Health) then	
+						if buffCountBolts == 2 and (DamageLib.GetAutoAttackDamage(Player,hero)+DamageLib.CalculatePhysicalDamage(Player,hero,getQdmg())+getWdmg(hero)) > (hero.Health)  and DickVayne.CanQ then	
 							Cast(_Q, tPos)						
 						end
 				end		
@@ -703,7 +676,7 @@ local function AutoE()
 			end
 	end
 end
--------- Ward
+
 
 
 --------------------------------
@@ -721,8 +694,10 @@ end
 -------- OnLoad
 --------------------------------
 function OnLoad() 
-	
+
 	if Player.CharName ~= "Vayne" then return false end 
+	EventManager.RegisterCallback(Enums.Events.OnProcessSpell, LastQTime)
+	EventManager.RegisterCallback(Enums.Events.OnProcessSpell, LastAATime)
 	-- EventManager.RegisterCallback(Enums.Events.OnTick, AutoWardBush)
 	EventManager.RegisterCallback(Enums.Events.OnTick, OnTick)
 	EventManager.RegisterCallback(Enums.Events.OnTick, AutoE)
@@ -734,7 +709,7 @@ function OnLoad()
 	EventManager.RegisterCallback(Enums.Events.OnPostAttack, TumbleCombat)
 	-- EventManager.RegisterCallback(Enums.Events.OnDraw, DrawTumbleMode)
 	EventManager.RegisterCallback(Enums.Events.OnTick, Condemn)	
-
+	Orb.Initialize()
 	local Key = DickVayne.Key
     EventManager.RegisterCallback(Events.OnKeyDown, function(keycode, _, _) if keycode == Key.Combo then DickVayne.Mode.Combo = true  end end)
     EventManager.RegisterCallback(Events.OnKeyUp,   function(keycode, _, _) if keycode == Key.Combo then DickVayne.Mode.Combo = false end end)	
