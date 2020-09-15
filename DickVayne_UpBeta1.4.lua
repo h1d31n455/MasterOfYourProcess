@@ -664,13 +664,14 @@ local function TumbleCombat()
 
 						if Orbwalker.GetMode() == "Combo" and Qmcom.Value and (Player.Mana) > (Player.MaxMana * (Qmpcom.Value / 100)) and not Orbwalker.IsWindingUp() then 
 							Cast(_Q, tPos)
-							Orbwalker
+							
 						end
-						if Orbwalker.GetMode() == "Harass" and Qmhara.Value and (Player.Mana) > (Player.MaxMana * (Qmphara.Value / 100)) and Orbwalker.IsWindingUp() then 
+						if Orbwalker.GetMode() =="Harass" and Qmhara.Value and (Player.Mana) > (Player.MaxMana * (Qmphara.Value / 100)) and Orbwalker.IsWindingUp() then 
 							Cast(_Q, tPos)
 						end
 			
 end			
+
 --------QKillSecure
 -- local function QKS()
 	-- if QKSonoff.Value then
