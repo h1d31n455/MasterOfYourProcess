@@ -96,7 +96,7 @@ local sqrt, min, max, cos, sin, pi, huge, ceil, floor, round, random, abs, deg, 
 ------Menu
 --Main_Menu
  local i_Menu = _G.Libs.Menu
- local M_Menu = i_Menu:AddMenu("M_Menu", "[my.name_aio]:")
+ local M_Menu = i_Menu:AddMenu("M_Menu", "[MarksManShip_AiO]:")
 --Activator
 	local A_Menu = i_Menu.M_Menu:AddMenu("A_Menu","[Activator]:")
 	 local A_MenuLabel = i_Menu.M_Menu.A_Menu:AddLabel("A_MenuLabel",":[Activator]")
@@ -398,7 +398,7 @@ function Summoners:GetSumms()
 				if sum.Name == "SummonerDot" then self._ignite = true end
 				if sum.Name == "SummonerBarrier" then self._barier = true end
 				if sum.Name == "SummonerHeal" then self._heal = true end
-				if sum.Name ~= "SummonerBarrier" and sum.Name ~= "SummonerHeal" and sum.Name ~= "SummonerDot" then self._not_suppor = true end					
+			
 			end
 end
 
@@ -412,7 +412,7 @@ function Summoners:GetSlot(SummName)
 end
 
 function Summoners:Menu()
-		self:GetSumms()
+	self:GetSumms()
 		self.Summoners_Menu = A_Menu:AddMenu("Summoners_Menu","[Summoners_Spell]:")
 		 self.Summoners_Label1 = self.Summoners_Menu:AddLabel("Summoners_Label1",":[Summoners_Spell]")
 		 
@@ -435,10 +435,7 @@ function Summoners:Menu()
 					self.Save_HP_Info =  self.Heal_Menu:AddSlider("Save_HP_Info", "Auto_Heal %HP",0,100,1,80)
 					
 	end	
-	if self._not_suppor == true then	
-		self.SumNotSupporter_1 = self.Summoners_Menu:AddLabel("SumNotSupporter_1","Failed to detect supported")
-		self.SumNotSupporter_2 = self.Summoners_Menu:AddLabel("SumNotSupporter_2","Summoners Spells")
-	end
+
 end
 
 ---Ignite
@@ -687,7 +684,7 @@ function Caitlyn:Menu()
 		 self.HitChance_Label = self.HitChance_Menu:AddLabel("HitChance_Label",":[HitChance]")
 		 
 				self.HitChance_ = self.HitChance_Menu:AddSlider("HitChance_","HitChance:",0.05,1,0.05,0.75)
-				self.HitChance_Mine = self.HitChance_Menu:AddLabel("HitChance_Mine","WiP - something created for Caitlyn")
+
 
 
 end
@@ -934,7 +931,7 @@ function OnLoad()
 	
 	
 Game.PrintChat('__________________________')
-Game.PrintChat('    <font color="#FFD700">MarksMan_AiO</font> <font color="#ffffff">Loaded.</font>')
+Game.PrintChat('    <font color="#FFD700">MarksManShip_AiO</font> <font color="#ffffff">Loaded.</font>')
 Game.PrintChat('    <font color="#b4b4b4">AiO_Version:</font> <font color="#ffffff">  ' .. string.format("%.1f", myname_aio) .. '</font>')
 Game.PrintChat('    <font color="#b4b4b4">AiO_Activator:</font> <font color="#ffffff">Loaded.</font>')
 Game.PrintChat('    <font color="#b4b4b4">AiO_Utility:</font> <font color="#ffffff">Loaded.</font>')
